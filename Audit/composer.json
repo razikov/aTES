@@ -1,0 +1,16 @@
+{
+    "name": "razikov/ates-audit",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Razikov\\AtesAudit\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Разиков Алексей",
+            "email": "razikov88@yandex.ru"
+        }
+    ],
+    "require": {}
+}
