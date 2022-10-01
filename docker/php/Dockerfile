@@ -22,3 +22,5 @@ RUN git clone --depth 1 https://github.com/edenhill/librdkafka.git \
     && echo "extension=rdkafka.so" > /usr/local/etc/php/conf.d/rdkafka.ini
 
 COPY ./php.ini /usr/local/etc/php/
+
+WORKDIR "/app"

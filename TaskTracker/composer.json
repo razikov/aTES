@@ -1,5 +1,5 @@
 {
-    "name": "razikov/ates-billing",
+    "name": "razikov/ates-task-tracker",
     "type": "project",
     "authors": [
         {
@@ -34,12 +34,12 @@
     },
     "autoload": {
         "psr-4": {
-            "Razikov\\AtesBilling\\": "src/"
+            "Razikov\\AtesTaskTracker\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "Razikov\\AtesBilling\\Tests\\": "tests/"
+            "Razikov\\AtesTaskTracker\\Tests\\": "tests/"
         }
     },
     "replace": {

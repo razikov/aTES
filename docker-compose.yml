@@ -5,7 +5,7 @@ services:
     build: docker/php
     container_name: fpm.ates-task
     volumes:
-      - ./Task:/app
+      - ./TaskTracker:/app
 
   rest-task:
     build: docker/nginx
@@ -13,7 +13,7 @@ services:
     depends_on:
       - fpm-task
     volumes:
-      - ./Task:/app
+      - ./TaskTracker:/app
       - ./docker/nginx/vhosts/task.conf:/etc/nginx/sites-enabled/default
     ports:
       - "8001:80"
@@ -87,35 +87,6 @@ services:
       POSTGRES_DB: auth
       POSTGRES_USER: auth
       POSTGRES_PASSWORD: auth
-
-  fpm-audit:
-    build: docker/php
-    container_name: fpm.ates-audit
-    volumes:
-      - ./Audit:/app
-
-  rest-audit:
-    build: docker/nginx
-    container_name: rest.ates-audit
-    depends_on:
-      - fpm-audit
-    volumes:
-      - ./Audit:/app
-      - ./docker/nginx/vhosts/audit.conf:/etc/nginx/sites-enabled/default
-    ports:
-      - "8004:80"
-
-  db-audit:
-    image: postgres:13-alpine
-    container_name: db.ates-audit
-    volumes:
-      - ./docker/data/db-audit:/var/lib/postgresql/data
-    ports:
-      - '5436:5432'
-    environment:
-      POSTGRES_DB: audit
-      POSTGRES_USER: audit
-      POSTGRES_PASSWORD: audit
 
   redis:
     image: redis:3
