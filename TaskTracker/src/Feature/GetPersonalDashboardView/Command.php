@@ -4,7 +4,7 @@ namespace Razikov\AtesTaskTracker\Feature\GetPersonalDashboardView;
 
 class Command
 {
-    private $userId;
+    private string $userId;
 
     public function __construct(
         $userId
@@ -12,7 +12,7 @@ class Command
         $this->userId = $userId;
     }
 
-    public function getUserId()
+    public function getUserId(): string
     {
         return $this->userId;
     }

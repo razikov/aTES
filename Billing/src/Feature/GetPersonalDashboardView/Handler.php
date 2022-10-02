@@ -1,6 +1,6 @@
 <?php
 
-namespace Razikov\AtesBilling\Feature\GetViewPersonalDashboard;
+namespace Razikov\AtesBilling\Feature\GetPersonalDashboardView;
 
 use Razikov\AtesBilling\Repository\AccountRepository;
 use Razikov\AtesBilling\Repository\AuditRepository;

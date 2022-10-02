@@ -1,6 +1,6 @@
 <?php
 
-namespace Razikov\AtesBilling\Feature\GetAnalitickViewDashboard;
+namespace Razikov\AtesBilling\Feature\GetAnaliticsDashboardView;
 
 use Razikov\AtesBilling\Repository\AuditRepository;
 

@@ -2,31 +2,30 @@
 
 namespace Razikov\AtesTaskTracker\Feature\CreateUser;
 
-use Razikov\AtesTaskTracker\Model\Task;
-use Razikov\AtesTaskTracker\Model\TaskId;
 use Razikov\AtesTaskTracker\Model\User;
+use Razikov\AtesTaskTracker\Service\StorageManager;
 
 class Handler
 {
-    private $userRepository;
-    private $storageManager;
-    private $dispatcher;
+    private StorageManager $storageManager;
 
     public function __construct(
-        $userRepository,
-        $storageManager,
-        $dispatcher
+        StorageManager $storageManager
     ) {
-        $this->userRepository = $userRepository;
         $this->storageManager = $storageManager;
-        $this->dispatcher = $dispatcher;
     }
 
     /**
-     * Слушает событие userCreated
+     * Слушает событие userCreated из auth
      */
     public function handle(Command $command)
     {
+        $user = new User(
+            $command->getId(),
+            $command->getRole()
+        );
 
+        $this->storageManager->persist($user);
+        $this->storageManager->flush();
     }
 }

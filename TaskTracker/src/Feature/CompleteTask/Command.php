@@ -4,15 +4,22 @@ namespace Razikov\AtesTaskTracker\Feature\CompleteTask;
 
 class Command
 {
-    private $taskId;
+    private string $taskId;
+    private string $responsibleId;
 
-    public function __construct($taskId)
+    public function __construct(string $taskId, string $userId)
     {
         $this->taskId = $taskId;
+        $this->responsibleId = $userId;
     }
 
-    public function getTaskId()
+    public function getTaskId(): string
     {
         return $this->taskId;
+    }
+
+    public function getUserId(): string
+    {
+        return $this->responsibleId;
     }
 }

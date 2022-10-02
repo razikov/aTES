@@ -2,25 +2,22 @@
 
 namespace Razikov\AtesAuth\Feature\CreateUser;
 
-use Razikov\AtesAuth\Model\User;
-use Razikov\AtesAuth\Repository\UserRepository;
+use Razikov\AtesAuth\Entity\User;
+use Razikov\AtesAuth\Model\UserId;
 use Razikov\AtesAuth\Service\StorageManager;
-use Razikov\AtesBilling\Model\Account;
-use Razikov\AtesBilling\Model\AccountOperationLog;
-use Razikov\AtesBilling\Model\AccountOperationType;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
+use Symfony\Component\Messenger\MessageBusInterface;
 
+#[AsMessageHandler]
 class Handler
 {
-    private UserRepository $userRepository;
     private StorageManager $storageManager;
-    private $dispatcher;
+    private MessageBusInterface $dispatcher;
 
     public function __construct(
-        UserRepository $userRepository,
         StorageManager $storageManager,
-        $dispatcher
+        MessageBusInterface $dispatcher
     ) {
-        $this->userRepository = $userRepository;
         $this->storageManager = $storageManager;
         $this->dispatcher = $dispatcher;
     }
@@ -28,13 +25,21 @@ class Handler
     /**
      * Срабатывает, когда назначается исполнитель. Читает событие taskAssigned
      */
-    public function handle(Command $command)
+    public function __invoke(Command $command)
     {
-        $user = new User();
+        $user = new User(
+            $userId = UserId::generate(),
+            $command->getRole(),
+            $command->getPassword(),
+            $command->getEmail()
+        );
 
         $this->storageManager->persist($user);
         $this->storageManager->flush();
 
-        $this->dispatcher->dispatch(new UserCreatedEvent());
+        $this->dispatcher->dispatch(new UserCreatedEvent(
+            $userId->getValue(),
+            $command->getRole()->getValue()
+        ));
     }
 }

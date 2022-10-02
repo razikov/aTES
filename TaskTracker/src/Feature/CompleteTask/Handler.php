@@ -2,22 +2,29 @@
 
 namespace Razikov\AtesTaskTracker\Feature\CompleteTask;
 
+use Razikov\AtesTaskTracker\Repository\TaskRepository;
+use Razikov\AtesTaskTracker\Service\StorageManager;
+use Symfony\Component\Messenger\MessageBusInterface;
+
 class Handler
 {
-    private $taskRepository;
-    private $storageManager;
-    private $dispatcher;
+    private TaskRepository $taskRepository;
+    private StorageManager $storageManager;
+    private MessageBusInterface $dispatcher;
 
     public function __construct(
-        $taskRepository,
-        $userRepository
+        TaskRepository $taskRepository,
+        StorageManager $storageManager,
+        MessageBusInterface $dispatcher
     ) {
         $this->taskRepository = $taskRepository;
+        $this->storageManager = $storageManager;
+        $this->dispatcher = $dispatcher;
     }
 
     public function handle(Command $command)
     {
-        $task = $this->taskRepository->getById($command->getTaskId());
+        $task = $this->taskRepository->getById($command->getTaskId(), $command->getUserId());
 
         $task->complete();
 
@@ -25,8 +32,8 @@ class Handler
         $this->storageManager->flush();
 
         $this->dispatcher->dispatch(new TaskCompletedEvent(
-            $task->getId(),
-            $task->getResponsibeId(),
+            $command->getTaskId(),
+            $command->getUserId(),
         ));
     }
 }

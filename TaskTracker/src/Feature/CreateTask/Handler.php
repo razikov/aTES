@@ -2,20 +2,23 @@
 
 namespace Razikov\AtesTaskTracker\Feature\CreateTask;
 
+use Razikov\AtesTaskTracker\Feature\AssignTasks\TaskAssignedEvent;
 use Razikov\AtesTaskTracker\Model\Task;
 use Razikov\AtesTaskTracker\Model\TaskId;
-use Razikov\AtesTaskTracker\Model\User;
+use Razikov\AtesTaskTracker\Repository\UserRepository;
+use Razikov\AtesTaskTracker\Service\StorageManager;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class Handler
 {
-    private $userRepository;
-    private $storageManager;
-    private $dispatcher;
+    private UserRepository $userRepository;
+    private StorageManager $storageManager;
+    private MessageBusInterface $dispatcher;
 
     public function __construct(
-        $userRepository,
-        $storageManager,
-        $dispatcher
+        UserRepository $userRepository,
+        StorageManager $storageManager,
+        MessageBusInterface $dispatcher
     ) {
         $this->userRepository = $userRepository;
         $this->storageManager = $storageManager;
@@ -24,7 +27,6 @@ class Handler
 
     public function handle(Command $command)
     {
-        /** @var User $user */
         $user = $this->userRepository->getRandomUser();
 
         $task = new Task(

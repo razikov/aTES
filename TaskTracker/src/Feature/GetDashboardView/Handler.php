@@ -2,21 +2,20 @@
 
 namespace Razikov\AtesTaskTracker\Feature\GetDashboardView;
 
-use Razikov\AtesTaskTracker\Model\Task;
+use Razikov\AtesTaskTracker\Repository\TaskRepository;
 
 class Handler
 {
-    private $taskRepository;
+    private TaskRepository $taskRepository;
 
     public function __construct(
-        $taskRepository
+        TaskRepository $taskRepository
     ) {
         $this->taskRepository = $taskRepository;
     }
 
     public function handle(Command $command)
     {
-        /** @var Task[] $tasks */
         $tasks = $this->taskRepository->getAll();
 
         return [

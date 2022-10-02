@@ -29,4 +29,9 @@ class Task
     {
         $this->responsible = $responsible;
     }
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
 }

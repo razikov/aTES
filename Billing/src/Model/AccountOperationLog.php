@@ -4,6 +4,7 @@ namespace Razikov\AtesBilling\Model;
 
 class AccountOperationLog
 {
+    private $id;
     private string $userId;
     private $type;
     private int $amount;

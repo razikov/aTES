@@ -3,7 +3,9 @@
 namespace Razikov\AtesAuth\Feature\SignIn;
 
 use Razikov\AtesAuth\Repository\UserRepository;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 class Handler
 {
     private UserRepository $userRepository;
@@ -17,7 +19,7 @@ class Handler
     /**
      * Срабатывает, когда назначается исполнитель. Читает событие taskAssigned
      */
-    public function handle(Command $command)
+    public function __invoke(Command $command)
     {
 
     }

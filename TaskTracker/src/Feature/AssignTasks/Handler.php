@@ -3,43 +3,50 @@
 namespace Razikov\AtesTaskTracker\Feature\AssignTasks;
 
 use Razikov\AtesTaskTracker\Model\User;
-use Razikov\AtesTaskTracker\Model\Task;
+use Razikov\AtesTaskTracker\Repository\TaskRepository;
+use Razikov\AtesTaskTracker\Repository\UserRepository;
+use Razikov\AtesTaskTracker\Service\StorageManager;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class Handler
 {
-    private $taskRepository;
-    private $userRepository;
-    private $dispatcher;
-    private $storageManager;
+    private TaskRepository $taskRepository;
+    private UserRepository $userRepository;
+    private StorageManager $storageManager;
+    private MessageBusInterface $dispatcher;
 
     public function __construct(
-        $taskRepository,
-        $userRepository
+        TaskRepository $taskRepository,
+        UserRepository $userRepository,
+        StorageManager $storageManager,
+        MessageBusInterface $dispatcher
     ) {
         $this->taskRepository = $taskRepository;
         $this->userRepository = $userRepository;
+        $this->storageManager = $storageManager;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
-     * @todo будут проблемы с памятью и размерами выборок
+     * @param Command $command
      * @todo может вызываться хоть каждую секунду, точно не успеет обработать до следующего вызова
-     * @param $command
+     * @todo будут проблемы с памятью и размерами выборок
      */
-    public function handle($command)
+    public function handle(Command $command)
     {
-        // Берет все открытые задачи
         $openTasks = $this->taskRepository->getRandomAllOpenTasks();
-        // Любой сотрудник кроме менеджера или админа
         $randomUsers = $this->userRepository->getRandomAvailableAllUsers();
 
         $events = [];
         foreach ($openTasks as $openTask) {
             /** @var User $randomUser */
-            $randomUser = array_rand($randomUsers);
-            /** @var Task $openTask */
+            $randomUser = array_rand($randomUsers); // @todo
             $openTask->assign($randomUser);
             $this->storageManager->persist($openTask);
-            $events[] = new TaskAssignedEvent();
+            $events[] = new TaskAssignedEvent(
+                $randomUser->getId(),
+                $openTask->getId()
+            );
         }
 
         $this->storageManager->flush();
