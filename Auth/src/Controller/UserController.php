@@ -3,6 +3,7 @@
 namespace Razikov\AtesAuth\Controller;
 
 use Razikov\AtesAuth\Feature\CreateUser\Command as CreateUserCommand;
+use Razikov\AtesAuth\Feature\CreateUser\UserCreatedEvent;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

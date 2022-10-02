@@ -2,32 +2,35 @@
 
 namespace Razikov\AtesBilling\Feature\Deposit;
 
-use Razikov\AtesBilling\Model\AccountOperationLog;
+use Razikov\AtesBilling\Entity\Chronos;
+use Razikov\AtesBilling\Entity\AccountOperationLog;
 use Razikov\AtesBilling\Model\AccountOperationType;
 use Razikov\AtesBilling\Repository\AccountRepository;
-use Razikov\AtesBilling\Service\Chronos;
+use Razikov\AtesBilling\Repository\ChronosRepository;
 use Razikov\AtesBilling\Service\StorageManager;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 class Handler
 {
     private AccountRepository $accountRepository;
     private StorageManager $storageManager;
-    private Chronos $chronos;
+    private ChronosRepository $chronosRepository;
 
     public function __construct(
         AccountRepository $accountRepository,
         StorageManager $storageManager,
-        Chronos $chronos
+        ChronosRepository $chronosRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->storageManager = $storageManager;
-        $this->chronos = $chronos;
+        $this->chronosRepository = $chronosRepository;
     }
 
     /**
      * Срабатывает, когда выполняется задача. Читает событие taskCompleted
      */
-    public function handle($command)
+    public function __invoke(Command $command)
     {
         $account = $this->accountRepository->getById($command->getUserId());
         $day = $this->chronos->getDay();

@@ -4,8 +4,10 @@ namespace Razikov\AtesTaskTracker\Feature\CompleteTask;
 
 use Razikov\AtesTaskTracker\Repository\TaskRepository;
 use Razikov\AtesTaskTracker\Service\StorageManager;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+#[AsMessageHandler]
 class Handler
 {
     private TaskRepository $taskRepository;
@@ -22,7 +24,7 @@ class Handler
         $this->dispatcher = $dispatcher;
     }
 
-    public function handle(Command $command)
+    public function __invoke(Command $command)
     {
         $task = $this->taskRepository->getById($command->getTaskId(), $command->getUserId());
 

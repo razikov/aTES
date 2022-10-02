@@ -3,12 +3,14 @@
 namespace Razikov\AtesTaskTracker\Feature\CreateTask;
 
 use Razikov\AtesTaskTracker\Feature\AssignTasks\TaskAssignedEvent;
-use Razikov\AtesTaskTracker\Model\Task;
+use Razikov\AtesTaskTracker\Entity\Task;
 use Razikov\AtesTaskTracker\Model\TaskId;
 use Razikov\AtesTaskTracker\Repository\UserRepository;
 use Razikov\AtesTaskTracker\Service\StorageManager;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+#[AsMessageHandler]
 class Handler
 {
     private UserRepository $userRepository;
@@ -25,9 +27,12 @@ class Handler
         $this->dispatcher = $dispatcher;
     }
 
-    public function handle(Command $command)
+    public function __invoke(Command $command)
     {
         $user = $this->userRepository->getRandomUser();
+        if (!$user) {
+            throw new \DomainException("не удалось назначить ответственного");
+        }
 
         $task = new Task(
             $taskId = TaskId::generate(),
@@ -43,9 +48,10 @@ class Handler
             $command->getDescription(),
             $user->getId()
         ));
+
         $this->dispatcher->dispatch(new TaskAssignedEvent(
-            $taskId->getValue(),
-            $user->getId()
+            $user->getId(),
+            $taskId->getValue()
         ));
     }
 }

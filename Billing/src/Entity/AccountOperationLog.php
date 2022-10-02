@@ -1,14 +1,27 @@
 <?php
 
-namespace Razikov\AtesBilling\Model;
+namespace Razikov\AtesBilling\Entity;
 
+use Razikov\AtesBilling\Model\AccountOperationType;
+use Doctrine\ORM\Mapping as ORM;
+use Razikov\AtesBilling\Repository\AuditRepository;
+
+#[ORM\Entity(repositoryClass: AuditRepository::class)]
 class AccountOperationLog
 {
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
     private $id;
+    #[ORM\Column]
     private string $userId;
-    private $type;
+    #[ORM\Column(length: 16)]
+    private string $type;
+    #[ORM\Column]
     private int $amount;
+    #[ORM\Column(type: 'text')]
     private string $description;
+    #[ORM\Column]
     private int $day;
 
     public function __construct(

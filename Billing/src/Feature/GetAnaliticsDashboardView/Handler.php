@@ -3,10 +3,12 @@
 namespace Razikov\AtesBilling\Feature\GetAnaliticsDashboardView;
 
 use Razikov\AtesBilling\Repository\AuditRepository;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
  * @todo Только для роли админ
  */
+#[AsMessageHandler]
 class Handler
 {
     private AuditRepository $auditRepository;
@@ -17,7 +19,7 @@ class Handler
         $this->auditRepository = $auditRepository;
     }
     
-    public function handle(Command $command): array
+    public function __invoke(Command $command): array
     {
         $completedTaskAmount = $this->auditRepository->getCompletedTaskAmountPerDay();
         $assignedTaskFee = $this->auditRepository->getAssignedTaskAmountPerDay();

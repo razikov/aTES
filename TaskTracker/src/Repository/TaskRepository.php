@@ -2,7 +2,7 @@
 
 namespace Razikov\AtesTaskTracker\Repository;
 
-use Razikov\AtesTaskTracker\Model\Task;
+use Razikov\AtesTaskTracker\Entity\Task;
 
 class TaskRepository
 {

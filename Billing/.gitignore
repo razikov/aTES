@@ -33,7 +33,6 @@ phpunit.phar
 /docker.bat
 /docker-compose.docker.yml
 /docker/data*
-.env
 
 ###> symfony/framework-bundle ###
 /.env.local

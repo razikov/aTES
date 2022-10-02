@@ -5,15 +5,19 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
-            async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            auth-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
+                serializer: Razikov\AtesAuth\Service\ExternalJsonMessageSerializer
 
         routing:
             # Route your messages to the transports
             'Razikov\AtesAuth\Feature\SignIn\Command': sync
             'Razikov\AtesAuth\Feature\CreateUser\Command': sync
-            'Razikov\AtesAuth\Feature\CreateUser\UserCreatedEvent': async
+            'Razikov\AtesAuth\Feature\CreateUser\UserCreatedEvent': auth-events
+            'Razikov\AtesAuth\Feature\Dummy\Command': sync
 
 # when@test:
 #    framework:

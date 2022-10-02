@@ -8,9 +8,9 @@ class AccountOperationType
     const CHARGE = 'charge';
     const PAYDAY = 'payday';
 
-    private $value;
+    private string $value;
 
-    public function __construct($value)
+    public function __construct(string $value)
     {
         if (!in_array($value, $this->availableValue())) {
             throw new \DomainException("invalid value");
@@ -28,22 +28,22 @@ class AccountOperationType
         ];
     }
 
-    public static function createDeposit()
+    public static function createDeposit(): AccountOperationType
     {
         return new self(self::DEPOSIT);
     }
 
-    public static function createCharge()
+    public static function createCharge(): AccountOperationType
     {
         return new self(self::CHARGE);
     }
 
-    public static function createPayday()
+    public static function createPayday(): AccountOperationType
     {
         return new self(self::PAYDAY);
     }
 
-    public function getValue()
+    public function getValue(): string
     {
         return $this->value;
     }

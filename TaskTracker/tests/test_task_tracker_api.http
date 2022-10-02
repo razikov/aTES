@@ -1,0 +1,25 @@
+POST http://rest.ates-task:8001/v1/task
+Accept: application/json
+Content-Type: application/json
+
+{
+  "description": "test description"
+}
+
+###
+
+PUT http://rest.ates-task:8001/v1/task/shuffle
+Accept: application/json
+
+###
+
+PUT http://rest.ates-task:8001/v1/task/complete
+Accept: application/json
+Content-Type: application/json
+
+{
+  "taskId": "",
+  "userId": ""
+}
+
+###

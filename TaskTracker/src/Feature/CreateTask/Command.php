@@ -8,8 +8,8 @@ class Command
     private string $description;
 
     public function __construct(
-        $description,
-        $userId = null
+        string $description,
+        ?string $userId = null
     ) {
         $this->userId = $userId;
         $this->description = $description;

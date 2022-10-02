@@ -1,12 +1,23 @@
 <?php
 
-namespace Razikov\AtesTaskTracker\Model;
+namespace Razikov\AtesTaskTracker\Entity;
 
+use Razikov\AtesTaskTracker\Model\TaskId;
+use Doctrine\ORM\Mapping as ORM;
+use Razikov\AtesTaskTracker\Repository\TaskRepository;
+
+#[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
+    #[ORM\Id]
+    #[ORM\Column(length: 255)]
     private string $id;
+    #[ORM\Column(type: 'text')]
     private string $description;
+    #[ORM\Column(length: 255)]
     private string $status;
+    #[ORM\OneToOne(targetEntity: "User")]
+    #[ORM\JoinColumn(name: "responsible_id", referencedColumnName: "id")]
     private User $responsible;
 
     public function __construct(

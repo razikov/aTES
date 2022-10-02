@@ -5,13 +5,36 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            sync: 'sync://'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            billing-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_BILLING_EVENTS)%'
+                serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+            auth-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
+                serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                options:
+                    queues:
+                        authEventsBilling: ~
+            task-tracker-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_TASK_TRACKER_EVENTS)%'
+                serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                options:
+                    queues:
+                        taskTrackerEventsBilling: ~
 
         routing:
             # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            'Razikov\AtesBilling\Feature\CreateAccount\Command': sync
+            'Razikov\AtesBilling\Feature\Charge\Command': sync
+            'Razikov\AtesBilling\Feature\Deposit\Command': sync
+            'Razikov\AtesBilling\Feature\Payday\Command': sync
+            'Razikov\AtesBilling\Feature\SendPaymentEmail\Command': async
+            'Razikov\AtesBilling\Feature\GetDashboardView\Command': sync
+            'Razikov\AtesBilling\Feature\GetPersonalDashboardView\Command': sync
+            'Razikov\AtesBilling\Feature\GetAnaliticsDashboardView\Command': sync
+            'Razikov\AtesBilling\Feature\Dummy\Command': sync
 
 # when@test:
 #    framework:

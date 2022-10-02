@@ -2,9 +2,11 @@
 
 namespace Razikov\AtesTaskTracker\Feature\CreateUser;
 
-use Razikov\AtesTaskTracker\Model\User;
+use Razikov\AtesTaskTracker\Entity\User;
 use Razikov\AtesTaskTracker\Service\StorageManager;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 class Handler
 {
     private StorageManager $storageManager;
@@ -18,7 +20,7 @@ class Handler
     /**
      * Слушает событие userCreated из auth
      */
-    public function handle(Command $command)
+    public function __invoke(Command $command)
     {
         $user = new User(
             $command->getId(),

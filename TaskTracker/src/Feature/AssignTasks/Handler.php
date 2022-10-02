@@ -2,12 +2,14 @@
 
 namespace Razikov\AtesTaskTracker\Feature\AssignTasks;
 
-use Razikov\AtesTaskTracker\Model\User;
+use Razikov\AtesTaskTracker\Entity\User;
 use Razikov\AtesTaskTracker\Repository\TaskRepository;
 use Razikov\AtesTaskTracker\Repository\UserRepository;
 use Razikov\AtesTaskTracker\Service\StorageManager;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
+#[AsMessageHandler]
 class Handler
 {
     private TaskRepository $taskRepository;
@@ -32,7 +34,7 @@ class Handler
      * @todo может вызываться хоть каждую секунду, точно не успеет обработать до следующего вызова
      * @todo будут проблемы с памятью и размерами выборок
      */
-    public function handle(Command $command)
+    public function __invoke(Command $command)
     {
         $openTasks = $this->taskRepository->getRandomAllOpenTasks();
         $randomUsers = $this->userRepository->getRandomAvailableAllUsers();

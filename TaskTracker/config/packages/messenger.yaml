@@ -5,13 +5,33 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
-            # sync: 'sync://'
+            sync: 'sync://'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            # task-tracker-events - события для других сервисов. Только на публикацию
+            task-tracker-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_TASK_TRACKER_EVENTS)%'
+                serializer: Razikov\AtesTaskTracker\Service\ExternalJsonMessageSerializer
+            # auth-events события из auth сервиса. Только на чтение
+            auth-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
+                serializer: Razikov\AtesTaskTracker\Service\ExternalJsonMessageSerializer
+                options:
+                    queues:
+                        authEventsTaskTracker: ~
 
         routing:
             # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            'Razikov\AtesTaskTracker\Feature\CreateUser\Command': sync
+            'Razikov\AtesTaskTracker\Feature\CreateTask\Command': sync
+            'Razikov\AtesTaskTracker\Feature\CreateTask\TaskCreatedEvent': task-tracker-events
+            'Razikov\AtesTaskTracker\Feature\AssignTasks\Command': sync
+            'Razikov\AtesTaskTracker\Feature\AssignTasks\TaskAssignedEvent': task-tracker-events
+            'Razikov\AtesTaskTracker\Feature\CompleteTask\Command': sync
+            'Razikov\AtesTaskTracker\Feature\CompleteTask\TaskCompletedEvent': task-tracker-events
+            'Razikov\AtesTaskTracker\Feature\GetDashboardView\Command': sync
+            'Razikov\AtesTaskTracker\Feature\GetPersonalDashboardView\Command': sync
+            'Razikov\AtesTaskTracker\Feature\Dummy\Command': sync
 
 # when@test:
 #    framework:

@@ -1,16 +1,11 @@
-GET http://rest.ates-auth:8003
-Accept: application/json
-
-###
-
 POST http://rest.ates-auth:8003/v1/user
 Accept: application/json
 Content-Type: application/json
 
 {
-  "email": "admin@admin.com",
-  "password": "admin",
-  "role": "ROLE_ADMIN"
+  "email": "developer5@developer.com",
+  "password": "developer5",
+  "role": "ROLE_DEVELOPER"
 }
 
 <> 2022-10-01T234324.404.html
