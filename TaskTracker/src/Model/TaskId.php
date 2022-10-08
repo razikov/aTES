@@ -2,6 +2,8 @@
 
 namespace Razikov\AtesTaskTracker\Model;
 
+use Ramsey\Uuid\Uuid;
+
 class TaskId
 {
     private string $value;
@@ -13,7 +15,7 @@ class TaskId
 
     public static function generate(): TaskId
     {
-        return new self(uniqid());
+        return new self(Uuid::uuid7());
     }
 
     public function getValue(): string

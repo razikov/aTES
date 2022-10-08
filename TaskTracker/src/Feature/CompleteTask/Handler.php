@@ -27,6 +27,9 @@ class Handler
     public function __invoke(Command $command)
     {
         $task = $this->taskRepository->getById($command->getTaskId(), $command->getUserId());
+        if (!$task) {
+            throw new \DomainException("User task not found");
+        }
 
         $task->complete();
 
@@ -34,8 +37,8 @@ class Handler
         $this->storageManager->flush();
 
         $this->dispatcher->dispatch(new TaskCompletedEvent(
-            $command->getTaskId(),
             $command->getUserId(),
+            $command->getTaskId(),
         ));
     }
 }

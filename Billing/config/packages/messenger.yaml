@@ -11,15 +11,21 @@ framework:
             billing-events:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_BILLING_EVENTS)%'
                 serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
             auth-events:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
                 serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
                 options:
                     queues:
                         authEventsBilling: ~
             task-tracker-events:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_TASK_TRACKER_EVENTS)%'
                 serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
                 options:
                     queues:
                         taskTrackerEventsBilling: ~
@@ -27,14 +33,14 @@ framework:
         routing:
             # Route your messages to the transports
             'Razikov\AtesBilling\Feature\CreateAccount\Command': sync
-            'Razikov\AtesBilling\Feature\Charge\Command': sync
-            'Razikov\AtesBilling\Feature\Deposit\Command': sync
+            'Razikov\AtesBilling\Feature\TaskAssigned\Command': sync
+            'Razikov\AtesBilling\Feature\TaskCreated\Command': sync
+            'Razikov\AtesBilling\Feature\TaskCompleted\Command': sync
             'Razikov\AtesBilling\Feature\Payday\Command': sync
             'Razikov\AtesBilling\Feature\SendPaymentEmail\Command': async
             'Razikov\AtesBilling\Feature\GetDashboardView\Command': sync
             'Razikov\AtesBilling\Feature\GetPersonalDashboardView\Command': sync
             'Razikov\AtesBilling\Feature\GetAnaliticsDashboardView\Command': sync
-            'Razikov\AtesBilling\Feature\Dummy\Command': sync
 
 # when@test:
 #    framework:

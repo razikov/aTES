@@ -13,14 +13,6 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * Любой сотрудник кроме менеджера или админа
-     * @return User[]
-     */
-    public function getRandomAvailableAllUsers(): array
-    {
-    }
-
     public function getRandomUser(): ?User
     {
         $userClass = User::class;
@@ -48,5 +40,22 @@ class UserRepository extends ServiceEntityRepository
         }
 
         return null;
+    }
+
+    /**
+     * @return User[]
+     */
+    public function getAllAvailableUsersForShuffle(): array
+    {
+        $userClass = User::class;
+
+        $query = $this->getEntityManager()
+            ->createQuery("
+                select u
+                from $userClass u
+                where u.role not in ('ROLE_ADMIN', 'ROLE_ACCOUNTANT')
+            ");
+
+        return $query->getResult();
     }
 }

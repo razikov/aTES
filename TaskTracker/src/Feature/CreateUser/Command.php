@@ -2,7 +2,9 @@
 
 namespace Razikov\AtesTaskTracker\Feature\CreateUser;
 
-class Command
+use Razikov\AtesTaskTracker\Model\BaseEventCommand;
+
+class Command implements BaseEventCommand
 {
     private string $id;
     private string $role;
@@ -23,5 +25,26 @@ class Command
     public function getRole(): string
     {
         return $this->role;
+    }
+
+    public function toMessage(): array
+    {
+        throw new \DomainException("Not supported");
+    }
+
+    public static function createFromMessage(array $message): ?Command
+    {
+        if (
+            $message['event'] == 'UserCreated'
+            && in_array($message['version'], [1])
+        ) {
+            $payload = $message['payload'];
+            return new self(
+                $payload['id'],
+                $payload['role'],
+            );
+        } else {
+            return null;
+        }
     }
 }

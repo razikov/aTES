@@ -30,7 +30,7 @@ class Handler
 
         return [
             'balance' => $balance,
-            'history' => $logs,
+            'auditLogs' => $logs,
         ];
     }
 }

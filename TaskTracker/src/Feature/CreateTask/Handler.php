@@ -48,10 +48,5 @@ class Handler
             $command->getDescription(),
             $user->getId()
         ));
-
-        $this->dispatcher->dispatch(new TaskAssignedEvent(
-            $user->getId(),
-            $taskId->getValue()
-        ));
     }
 }

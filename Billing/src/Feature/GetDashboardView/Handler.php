@@ -3,6 +3,7 @@
 namespace Razikov\AtesBilling\Feature\GetDashboardView;
 
 use Razikov\AtesBilling\Repository\AuditRepository;
+use Razikov\AtesBilling\Repository\ChronosRepository;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
 /**
@@ -12,22 +13,28 @@ use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 class Handler
 {
     private AuditRepository $auditRepository;
+    private ChronosRepository $chronosRepository;
 
     public function __construct(
-        AuditRepository $auditRepository
+        AuditRepository $auditRepository,
+        ChronosRepository $chronosRepository
     ) {
         $this->auditRepository = $auditRepository;
+        $this->chronosRepository = $chronosRepository;
     }
 
     public function __invoke(Command $command): array
     {
-        $completedTaskAmount = $this->auditRepository->getCompletedTaskAmountPerDay();
-        $assignedTaskFee = $this->auditRepository->getAssignedTaskAmountPerDay();
-        $balancePerDay = $completedTaskAmount - $assignedTaskFee;
+        $chronos = $this->chronosRepository->getOrCreateOnlyOneAllowed();
+        $day = $chronos->getDay();
+
+        $completedTaskAmount = $this->auditRepository->getCompletedTaskAmountPerDay($day);
+        $assignedTaskFee = $this->auditRepository->getAssignedTaskAmountPerDay($day);
+        $balancePerDay = $completedTaskAmount + $assignedTaskFee;
 
         return [
-            'revenue' => $balancePerDay, // за сегодня
-            'history' => [],
+            'revenue' => $balancePerDay,
+            'stats' => [],
         ];
     }
 }

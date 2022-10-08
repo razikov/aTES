@@ -10,13 +10,13 @@ use Razikov\AtesTaskTracker\Repository\TaskRepository;
 class Task
 {
     #[ORM\Id]
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: "guid", unique: true)]
     private string $id;
     #[ORM\Column(type: 'text')]
     private string $description;
     #[ORM\Column(length: 255)]
     private string $status;
-    #[ORM\OneToOne(targetEntity: "User")]
+    #[ORM\ManyToOne(targetEntity: "User")]
     #[ORM\JoinColumn(name: "responsible_id", referencedColumnName: "id")]
     private User $responsible;
 
@@ -26,23 +26,44 @@ class Task
         User $responsible
     ) {
         $this->id = $id->getValue();
-        $this->status = 'opened';
+        $this->status = 'open';
         $this->description = $description;
         $this->assign($responsible);
     }
 
     public function complete()
     {
-        $this->status = 'completed';
+        if ($this->status != 'open') {
+            throw new \DomainException("Завершить можно только открытую задачу");
+        }
+        $this->status = 'complete';
     }
 
     public function assign(User $responsible)
     {
+        if ($this->status != 'open') {
+            throw new \DomainException("Сменить исполнителя можно только для открытой задачи");
+        }
         $this->responsible = $responsible;
     }
 
     public function getId(): string
     {
         return $this->id;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    public function getResponsibleId(): string
+    {
+        return $this->responsible->getId();
     }
 }

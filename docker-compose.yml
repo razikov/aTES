@@ -7,6 +7,16 @@ services:
     volumes:
       - ./TaskTracker:/app
 
+  fpm-task-console:
+    build: docker/php
+    container_name: fpm.ates-task-console
+    command: bash -c "sleep 10 && php /app/bin/console messenger:consume async task-tracker-events auth-events -vv"
+    depends_on:
+      - rabbit
+      - db-task
+    volumes:
+      - ./TaskTracker:/app
+
   rest-task:
     build: docker/nginx
     container_name: rest.ates-task
@@ -36,13 +46,23 @@ services:
     volumes:
       - ./Billing:/app
 
+  fpm-billing-console:
+    build: docker/php
+    container_name: fpm.ates-billing-console
+    command: bash -c "sleep 10 && php /app/bin/console messenger:consume async billing-events task-tracker-events auth-events -vv"
+    depends_on:
+      - rabbit
+      - db-billing
+    volumes:
+      - ./Billing:/app
+
   rest-billing:
     build: docker/nginx
     container_name: rest.ates-billing
     depends_on:
       - fpm-billing
     volumes:
-      - ./Task:/app
+      - ./Billing:/app
       - ./docker/nginx/vhosts/billing.conf:/etc/nginx/sites-enabled/default
     ports:
       - "8002:80"
@@ -62,6 +82,16 @@ services:
   fpm-auth:
     build: docker/php
     container_name: fpm.ates-auth
+    volumes:
+      - ./Auth:/app
+
+  fpm-auth-console:
+    build: docker/php
+    container_name: fpm.ates-auth-console
+    command: bash -c "sleep 10 && php /app/bin/console messenger:consume async auth-events -vv"
+    depends_on:
+      - rabbit
+      - db-auth
     volumes:
       - ./Auth:/app
 
@@ -87,19 +117,6 @@ services:
       POSTGRES_DB: auth
       POSTGRES_USER: auth
       POSTGRES_PASSWORD: auth
-
-#  redis:
-#    image: redis:3
-#    container_name: redis.ates
-#    volumes:
-#      - ./docker/data/redis:/data
-#      - ./docker/redis/redis.conf:/etc/redis.conf
-#    command: ["redis-server", "/etc/redis.conf"]
-#    ports:
-#      - "6379:6379"
-#      - "49002:49002"
-#    environment:
-#      VIRTUAL_HOST: redis.ates
 
   rabbit:
     image: rabbitmq:3-management

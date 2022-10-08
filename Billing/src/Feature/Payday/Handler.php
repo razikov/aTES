@@ -3,7 +3,6 @@
 namespace Razikov\AtesBilling\Feature\Payday;
 
 use Razikov\AtesBilling\Entity\AccountOperationLog;
-use Razikov\AtesBilling\Entity\Chronos;
 use Razikov\AtesBilling\Model\AccountOperationType;
 use Razikov\AtesBilling\Repository\AccountRepository;
 use Razikov\AtesBilling\Repository\ChronosRepository;
@@ -32,31 +31,44 @@ class Handler
         $this->dispatcher = $dispatcher;
     }
 
-    /**
-     * Срабатывает, когда заканчивается день. Читает событие dayEnded
-     * @todo должен обойти все аккаунты, после обхода увеличить день
-     */
     public function __invoke(Command $command)
     {
-        $account = $this->accountRepository->getById($command->getUserId());
+        $accounts = $this->accountRepository->getAllProfitableAccount();
 
-        $amount = $account->payday();
-        $day = $command->getDay();
+        $chronos = $this->chronosRepository->getOrCreateOnlyOneAllowed();
+        $day = $chronos->getDay();
 
-        if ($amount > 0) {
-            $log = new AccountOperationLog(
-                $command->getUserId(),
-                AccountOperationType::createPayday(),
-                $amount,
-                "payment per day #{$day}",
-                $day
-            );
+        $events = [];
+        foreach ($accounts as $account) {
+            $amount = $account->payday();
+            if ($amount > 0) {
+                $log = new AccountOperationLog(
+                    $account->getUserId(),
+                    null,
+                    AccountOperationType::createPayday(),
+                    $amount,
+                    "payment per day #{$day}",
+                    $day
+                );
 
-            $this->storageManager->persist($account);
-            $this->storageManager->persist($log);
-            $this->storageManager->flush();
+                $this->storageManager->persist($account);
+                $this->storageManager->persist($log);
 
-            $this->dispatcher->dispatch(new SendPaymentEmailCommand());
+                $events[] = new SendPaymentEmailCommand(
+                    $account->getEmail(),
+                    $amount,
+                    $day
+                );
+            }
+        }
+
+        $chronos->nextDay();
+
+        $this->storageManager->persist($chronos);
+        $this->storageManager->flush();
+
+        foreach ($events as $event) {
+            $this->dispatcher->dispatch($event);
         }
     }
 }

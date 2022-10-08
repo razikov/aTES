@@ -11,13 +11,13 @@ framework:
             auth-events:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
                 serializer: Razikov\AtesAuth\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
 
         routing:
             # Route your messages to the transports
-            'Razikov\AtesAuth\Feature\SignIn\Command': sync
             'Razikov\AtesAuth\Feature\CreateUser\Command': sync
             'Razikov\AtesAuth\Feature\CreateUser\UserCreatedEvent': auth-events
-            'Razikov\AtesAuth\Feature\Dummy\Command': sync
 
 # when@test:
 #    framework:

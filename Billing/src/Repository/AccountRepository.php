@@ -18,16 +18,55 @@ class AccountRepository extends ServiceEntityRepository
         $accountClass = Account::class;
         $query = $this->getEntityManager()
             ->createQuery("
-                    select a
-                    from $accountClass a
-                    where a.userId = :userId
-                ")
+                select a
+                from $accountClass a
+                where a.userId = :userId
+            ")
             ->setParameter('userId', $userId);
 
         return $query->getOneOrNullResult();
     }
 
-    public function getCurrentAmountForUser($userId): int
+    /**
+     * @return Account[]
+     */
+    public function getAllProfitableAccount(): array
     {
+        $accountClass = Account::class;
+        $query = $this->getEntityManager()
+            ->createQuery("
+                    select a
+                    from $accountClass a
+                    where a.amount > 0
+                ");
+
+        return $query->getResult();
+    }
+
+    public function getCurrentAmountForUser(string $userId)
+    {
+        $accountClass = Account::class;
+        $query = $this->getEntityManager()
+            ->createQuery("
+                    select a.amount
+                    from $accountClass a
+                    where a.userId = :userId
+                ")
+            ->setParameter('userId', $userId);
+
+        return $query->getSingleScalarResult();
+    }
+
+    public function getCountLossesPerDay(): int
+    {
+        $accountClass = Account::class;
+        $query = $this->getEntityManager()
+            ->createQuery("
+                select count(log)
+                from $accountClass log
+                where log.amount < 0
+            ");
+
+        return $query->getSingleScalarResult();
     }
 }

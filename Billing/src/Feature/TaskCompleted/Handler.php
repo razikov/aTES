@@ -1,12 +1,13 @@
 <?php
 
-namespace Razikov\AtesBilling\Feature\Deposit;
+namespace Razikov\AtesBilling\Feature\TaskCompleted;
 
 use Razikov\AtesBilling\Entity\Chronos;
 use Razikov\AtesBilling\Entity\AccountOperationLog;
 use Razikov\AtesBilling\Model\AccountOperationType;
 use Razikov\AtesBilling\Repository\AccountRepository;
 use Razikov\AtesBilling\Repository\ChronosRepository;
+use Razikov\AtesBilling\Repository\TaskRepository;
 use Razikov\AtesBilling\Service\StorageManager;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
@@ -16,31 +17,41 @@ class Handler
     private AccountRepository $accountRepository;
     private StorageManager $storageManager;
     private ChronosRepository $chronosRepository;
+    private TaskRepository $taskRepository;
 
     public function __construct(
         AccountRepository $accountRepository,
         StorageManager $storageManager,
-        ChronosRepository $chronosRepository
+        ChronosRepository $chronosRepository,
+        TaskRepository $taskRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->storageManager = $storageManager;
         $this->chronosRepository = $chronosRepository;
+        $this->taskRepository = $taskRepository;
     }
 
-    /**
-     * Срабатывает, когда выполняется задача. Читает событие taskCompleted
-     */
     public function __invoke(Command $command)
     {
         $account = $this->accountRepository->getById($command->getUserId());
-        $day = $this->chronos->getDay();
+        if (!$account) {
+            throw new \DomainException("Account not found");
+        }
 
-        $amount = rand(20, 40);
+        $task = $this->taskRepository->getById($command->getTaskId());
+        if (!$task) {
+            throw new \DomainException("Task not found");
+        }
 
+        $chronos = $this->chronosRepository->getOrCreateOnlyOneAllowed();
+        $day = $chronos->getDay();
+
+        $amount = $task->getReward();
         $account->deposit($amount);
 
         $log = new AccountOperationLog(
             $command->getUserId(),
+            $task->getId(),
             AccountOperationType::createDeposit(),
             $amount,
             "Task #[{$command->getTaskId()}] completed",

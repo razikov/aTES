@@ -12,10 +12,14 @@ framework:
             task-tracker-events:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_TASK_TRACKER_EVENTS)%'
                 serializer: Razikov\AtesTaskTracker\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
             # auth-events события из auth сервиса. Только на чтение
             auth-events:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
                 serializer: Razikov\AtesTaskTracker\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
                 options:
                     queues:
                         authEventsTaskTracker: ~
@@ -31,7 +35,6 @@ framework:
             'Razikov\AtesTaskTracker\Feature\CompleteTask\TaskCompletedEvent': task-tracker-events
             'Razikov\AtesTaskTracker\Feature\GetDashboardView\Command': sync
             'Razikov\AtesTaskTracker\Feature\GetPersonalDashboardView\Command': sync
-            'Razikov\AtesTaskTracker\Feature\Dummy\Command': sync
 
 # when@test:
 #    framework:

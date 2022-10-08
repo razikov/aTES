@@ -21,6 +21,7 @@ class Handler
     {
         $account = new Account(
             $command->getUserId(),
+            $command->getEmail(),
             0
         );
 

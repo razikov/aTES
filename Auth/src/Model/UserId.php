@@ -2,6 +2,8 @@
 
 namespace Razikov\AtesAuth\Model;
 
+use Ramsey\Uuid\Uuid;
+
 class UserId
 {
     private string $value;
@@ -13,7 +15,7 @@ class UserId
 
     public static function generate(): UserId
     {
-        return new self(uniqid());
+        return new self(Uuid::uuid7());
     }
 
     public function getValue(): string

@@ -3,7 +3,9 @@
 namespace Razikov\AtesTaskTracker\Feature\GetDashboardView;
 
 use Razikov\AtesTaskTracker\Repository\TaskRepository;
+use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 
+#[AsMessageHandler]
 class Handler
 {
     private TaskRepository $taskRepository;
@@ -14,9 +16,12 @@ class Handler
         $this->taskRepository = $taskRepository;
     }
 
-    public function handle(Command $command)
+    public function __invoke(Command $command)
     {
-        $tasks = $this->taskRepository->getAll();
+        $page = $command->getPage();
+        $limit = $command->getLimit();
+
+        $tasks = $this->taskRepository->findBy([], null, $limit, (($page - 1) * $limit));
 
         return [
             'tasks' => $tasks,

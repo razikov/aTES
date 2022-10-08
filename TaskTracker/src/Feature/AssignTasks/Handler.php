@@ -32,17 +32,17 @@ class Handler
     /**
      * @param Command $command
      * @todo может вызываться хоть каждую секунду, точно не успеет обработать до следующего вызова
-     * @todo будут проблемы с памятью и размерами выборок
+     * @todo будут падения по памяти и времени на больших выборках
      */
     public function __invoke(Command $command)
     {
-        $openTasks = $this->taskRepository->getRandomAllOpenTasks();
-        $randomUsers = $this->userRepository->getRandomAvailableAllUsers();
+        $openTasks = $this->taskRepository->getAllOpenTasks();
+        $users = $this->userRepository->getAllAvailableUsersForShuffle();
 
         $events = [];
         foreach ($openTasks as $openTask) {
             /** @var User $randomUser */
-            $randomUser = array_rand($randomUsers); // @todo
+            $randomUser = $users[array_rand($users)];
             $openTask->assign($randomUser);
             $this->storageManager->persist($openTask);
             $events[] = new TaskAssignedEvent(
