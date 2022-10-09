@@ -1,0 +1,51 @@
+framework:
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # failed: 'doctrine://default?queue_name=failed'
+            sync: 'sync://'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            billing-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_BILLING_EVENTS)%'
+                serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
+            auth-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
+                serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
+                options:
+                    queues:
+                        authEventsBilling: ~
+            task-tracker-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_TASK_TRACKER_EVENTS)%'
+                serializer: Razikov\AtesBilling\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
+                options:
+                    queues:
+                        taskTrackerEventsBilling: ~
+
+        routing:
+            # Route your messages to the transports
+            'Razikov\AtesBilling\Feature\CreateAccount\Command': sync
+            'Razikov\AtesBilling\Feature\TaskAssigned\Command': sync
+            'Razikov\AtesBilling\Feature\TaskCreated\Command': sync
+            'Razikov\AtesBilling\Feature\TaskCompleted\Command': sync
+            'Razikov\AtesBilling\Feature\Payday\Command': sync
+            'Razikov\AtesBilling\Feature\SendPaymentEmail\Command': async
+            'Razikov\AtesBilling\Feature\GetDashboardView\Command': sync
+            'Razikov\AtesBilling\Feature\GetPersonalDashboardView\Command': sync
+            'Razikov\AtesBilling\Feature\GetAnaliticsDashboardView\Command': sync
+
+# when@test:
+#    framework:
+#        messenger:
+#            transports:
+#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
+#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
+#                async: 'in-memory://'

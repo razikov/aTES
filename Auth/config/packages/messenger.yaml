@@ -1,0 +1,28 @@
+framework:
+    messenger:
+        # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
+        # failure_transport: failed
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # failed: 'doctrine://default?queue_name=failed'
+            sync: 'sync://'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
+            auth-events:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN_AUTH_EVENTS)%'
+                serializer: Razikov\AtesAuth\Service\ExternalJsonMessageSerializer
+                retry_strategy:
+                    max_retries: 0
+
+        routing:
+            # Route your messages to the transports
+            'Razikov\AtesAuth\Feature\CreateUser\Command': sync
+            'Razikov\AtesAuth\Feature\CreateUser\UserCreatedEvent': auth-events
+
+# when@test:
+#    framework:
+#        messenger:
+#            transports:
+#                # replace with your transport name here (e.g., my_transport: 'in-memory://')
+#                # For more Messenger testing tools, see https://github.com/zenstruck/messenger-test
+#                async: 'in-memory://'

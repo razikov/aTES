@@ -1,0 +1,36 @@
+### Создание пользователя
+
+POST http://rest.ates-auth:8003/api/v1/user
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NjUyNTQ2MzgsImV4cCI6MTY2NTI1ODIzOCwicm9sZXMiOlsiUk9MRV9BRE1JTiJdLCJ1c2VybmFtZSI6ImFkbWluQGxvY2FsaG9zdC5kZXYiLCJ1c2VySWQiOiIwMTgzYjhkMC0xOTJkLTdhYTQtODA0Ni1lZGNmOGQ0MGU4OGMifQ.jxu-pQ3vVpfJVf2GaRqFyuApyxe1LDQTyI4QDLAfw3O6xz0kZ6DWNt9TGEx7XvPmyh9qelu7dChkbIU17-bLO9TISe6f4VMHqXVdaXftym4HNtT_UkpbzEK18BeCwUwoDQbiq7M3oCSSocLx_T3I0flCJAJE_JB8HiWuQIm-UZYqF3p6BKdzLuCu7bmCvEc6Wl1vhxQFVyS5wStQmZ16s9Gk0JplR9S6zDOdVN4-SpENQz1cRJXClnSyW94DTpl1eJt69jYtl9fwnUK8I4blvOM-Af6aaqvba5pZSqL-y6pPdQ2ga2zIc3DUIaOjDR0VlmwMY-BCjazg2uq7j6SEaA
+
+{
+  "email": "developer10@localhost.dev",
+  "password": "developer10",
+  "role": "ROLE_DEVELOPER"
+}
+
+### Дашборд пользователей
+
+GET http://rest.ates-auth:8003/api/v1/user?page=1&limit=10
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NjUyNTQ2MzgsImV4cCI6MTY2NTI1ODIzOCwicm9sZXMiOlsiUk9MRV9BRE1JTiJdLCJ1c2VybmFtZSI6ImFkbWluQGxvY2FsaG9zdC5kZXYiLCJ1c2VySWQiOiIwMTgzYjhkMC0xOTJkLTdhYTQtODA0Ni1lZGNmOGQ0MGU4OGMifQ.jxu-pQ3vVpfJVf2GaRqFyuApyxe1LDQTyI4QDLAfw3O6xz0kZ6DWNt9TGEx7XvPmyh9qelu7dChkbIU17-bLO9TISe6f4VMHqXVdaXftym4HNtT_UkpbzEK18BeCwUwoDQbiq7M3oCSSocLx_T3I0flCJAJE_JB8HiWuQIm-UZYqF3p6BKdzLuCu7bmCvEc6Wl1vhxQFVyS5wStQmZ16s9Gk0JplR9S6zDOdVN4-SpENQz1cRJXClnSyW94DTpl1eJt69jYtl9fwnUK8I4blvOM-Af6aaqvba5pZSqL-y6pPdQ2ga2zIc3DUIaOjDR0VlmwMY-BCjazg2uq7j6SEaA
+
+### Авторизация
+
+POST http://rest.ates-auth:8003/api/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "admin@localhost.dev",
+  "password": "admin"
+}
+
+### Создание первого пользователя системы "admin@localhost.dev":"admin"
+
+POST http://rest.ates-auth:8003/dev/create-first-admin
+Accept: application/json
+Content-Type: application/json
