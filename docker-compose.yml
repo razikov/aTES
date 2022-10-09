@@ -1,0 +1,153 @@
+version: '3'
+
+services:
+  fpm-task:
+    build: docker/php
+    container_name: fpm.ates-task
+    volumes:
+      - ./TaskTracker:/app
+
+  fpm-task-console:
+    build: docker/php
+    container_name: fpm.ates-task-console
+    command: bash -c "sleep 10 && php /app/bin/console messenger:consume async task-tracker-events auth-events -vv"
+    depends_on:
+      - rabbit
+      - db-task
+    volumes:
+      - ./TaskTracker:/app
+
+  rest-task:
+    build: docker/nginx
+    container_name: rest.ates-task
+    depends_on:
+      - fpm-task
+    volumes:
+      - ./TaskTracker:/app
+      - ./docker/nginx/vhosts/task.conf:/etc/nginx/sites-enabled/default
+    ports:
+      - "8001:80"
+
+  db-task:
+    image: postgres:13-alpine
+    container_name: db.ates-task
+    volumes:
+      - ./docker/data/db-task:/var/lib/postgresql/data
+    ports:
+      - '5433:5432'
+    environment:
+      POSTGRES_DB: task
+      POSTGRES_USER: task
+      POSTGRES_PASSWORD: task
+
+  fpm-billing:
+    build: docker/php
+    container_name: fpm.ates-billing
+    volumes:
+      - ./Billing:/app
+
+  fpm-billing-console:
+    build: docker/php
+    container_name: fpm.ates-billing-console
+    command: bash -c "sleep 10 && php /app/bin/console messenger:consume async billing-events task-tracker-events auth-events -vv"
+    depends_on:
+      - rabbit
+      - db-billing
+    volumes:
+      - ./Billing:/app
+
+  rest-billing:
+    build: docker/nginx
+    container_name: rest.ates-billing
+    depends_on:
+      - fpm-billing
+    volumes:
+      - ./Billing:/app
+      - ./docker/nginx/vhosts/billing.conf:/etc/nginx/sites-enabled/default
+    ports:
+      - "8002:80"
+
+  db-billing:
+    image: postgres:13-alpine
+    container_name: db.ates-billing
+    volumes:
+      - ./docker/data/db-billing:/var/lib/postgresql/data
+    ports:
+      - '5434:5432'
+    environment:
+      POSTGRES_DB: billing
+      POSTGRES_USER: billing
+      POSTGRES_PASSWORD: billing
+
+  fpm-auth:
+    build: docker/php
+    container_name: fpm.ates-auth
+    volumes:
+      - ./Auth:/app
+
+  fpm-auth-console:
+    build: docker/php
+    container_name: fpm.ates-auth-console
+    command: bash -c "sleep 10 && php /app/bin/console messenger:consume async auth-events -vv"
+    depends_on:
+      - rabbit
+      - db-auth
+    volumes:
+      - ./Auth:/app
+
+  rest-auth:
+    build: docker/nginx
+    container_name: rest.ates-auth
+    depends_on:
+      - fpm-auth
+    volumes:
+      - ./Auth:/app
+      - ./docker/nginx/vhosts/auth.conf:/etc/nginx/sites-enabled/default
+    ports:
+      - "8003:80"
+
+  db-auth:
+    image: postgres:13-alpine
+    container_name: db.ates-auth
+    volumes:
+      - ./docker/data/db-auth:/var/lib/postgresql/data
+    ports:
+      - '5435:5432'
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: auth
+      POSTGRES_PASSWORD: auth
+
+  rabbit:
+    image: rabbitmq:3-management
+    container_name: rabbit.ates
+    ports:
+      - "15672:15672"
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "25672:25672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ates
+      RABBITMQ_DEFAULT_PASS: ates
+      VIRTUAL_HOST: rabbit.ates
+
+#  zookeeper:
+#    image: wurstmeister/zookeeper
+#    container_name: zookeeper.ates
+#    ports:
+#      - 2181:2181
+#
+#  kafka:
+#    image: wurstmeister/kafka
+#    container_name: kafka.ates
+#    ports:
+#      - 9092:9092
+#    environment:
+#      KAFKA_ADVERTISED_HOST_NAME: kafka
+#      KAFKA_CREATE_TOPICS: "test:1:1"
+#      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+#    volumes:
+#      - /var/run/docker.sock:/var/run/docker.sock
+#    depends_on:
+#      - zookeeper
