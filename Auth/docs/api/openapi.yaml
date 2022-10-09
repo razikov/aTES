@@ -1,0 +1,77 @@
+openapi: "3.0.3"
+
+servers:
+  - url: http://localhost:8003
+  - url: http://rest.ates-auth:8003
+
+info:
+  version: "1.0.0"
+  title: "aTES"
+  description: "Auth Service. Управляет пользователями. Отвечает за авторизацию."
+
+paths:
+  /api/v1/user:
+    post:
+      summary: "Создает пользователя"
+      description: ""
+      tags:
+        - user
+      security:
+        - BearerAuth: [ROLE_ADMIN]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                email:
+                  type: string
+                  example: 'admin@localhost.dev'
+                password:
+                  type: string
+                  example: 'admin'
+                role:
+                  type: string
+                  example: 'ROLE_ADMIN'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              example:
+                response:
+                  success: true
+
+  /api/login:
+    post:
+      summary: "Метод авторизации. Возвращает jwt токен"
+      description: ""
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  type: string
+                  example: 'admin@localhost.dev'
+                password:
+                  type: string
+                  example: 'admin'
+      responses:
+        200:
+          description: ''
+          content:
+            application/json:
+              example:
+                response:
+                  token: eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2NjUwMDIyMDQsImV4cCI6MTY2NTAwNTgwNCwicm9sZXMiOlsiUk9MRV9BRE1JTiJdLCJ1c2VybmFtZSI6ImFkbWluQGxvY2FsaG9zdC5kZXYiLCJ1c2VySWQiOiIwMTgzOWZkYS00MjEyLTc0OTUtODIyNS02OTE5M2E2YWM0MTUifQ.GzlZPIkHbTtWKtDn3F_kiuF3tIwZAvJqtP758tCvVXemTkIh0PUe2rfd0lND2hCTcavQADpm3oKUz3TgNV1loN2xUnKM0DetORkMFkzOvq6PYDV2hile4q23PLLMIxOKa9-dHpplJHM8Dp-cHqdV9UkiC0ApHJDRAdTT942D6K1CnT3Gs50ngn3iiKBmXVRrjxsTnfTqRhte7zurDqwwUsMuxM68DzOPogMxDPRfrtr24xW3sN3NpBxbuPn5FRoiFs3-B5XvE3IO_df65dA606-RSWFM-ZYm1hZuAfLaHIdLaQcT0CjKfNoKx0GRhfUaOnbDmQICSUcPoTqlK9s4pg
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
