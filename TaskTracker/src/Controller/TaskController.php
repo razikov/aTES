@@ -29,7 +29,9 @@ class TaskController extends AbstractController
 
         // @todo validate
         $bus->dispatch(new CreateTaskCommand(
-            $data->description
+            $data->description,
+            $data->title,
+            $data->jiraId
         ));
 
         return $this->json([

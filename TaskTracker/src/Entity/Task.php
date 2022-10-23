@@ -12,6 +12,10 @@ class Task
     #[ORM\Id]
     #[ORM\Column(type: "guid", unique: true)]
     private string $id;
+    #[ORM\Column(length: 255, nullable: true)]
+    private string $title;
+    #[ORM\Column(length: 255, nullable: true)]
+    private string $jira_id;
     #[ORM\Column(type: 'text')]
     private string $description;
     #[ORM\Column(length: 255)]
@@ -22,10 +26,14 @@ class Task
 
     public function __construct(
         TaskId $id,
+        string $title,
+        string $jira_id,
         string $description,
         User $responsible
     ) {
         $this->id = $id->getValue();
+        $this->title = $title;
+        $this->jira_id = $jira_id;
         $this->status = 'open';
         $this->description = $description;
         $this->assign($responsible);

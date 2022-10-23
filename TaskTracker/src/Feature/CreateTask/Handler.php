@@ -36,6 +36,8 @@ class Handler
 
         $task = new Task(
             $taskId = TaskId::generate(),
+            $command->getTitle(),
+            $command->getJiraId(),
             $command->getDescription(),
             $user
         );
@@ -43,8 +45,10 @@ class Handler
         $this->storageManager->persist($task);
         $this->storageManager->flush();
 
-        $this->dispatcher->dispatch(new TaskCreatedEvent(
+        $this->dispatcher->dispatch(new TaskCreatedEventV2(
             $taskId->getValue(),
+            $command->getTitle(),
+            $command->getJiraId(),
             $command->getDescription(),
             $user->getId()
         ));
