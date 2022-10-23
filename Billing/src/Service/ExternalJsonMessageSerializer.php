@@ -6,6 +6,7 @@ use Razikov\AtesBilling\Feature\CreateAccount\Command as CreateAccountCommand;
 use Razikov\AtesBilling\Feature\TaskCompleted\Command as TaskCompletedCommand;
 use Razikov\AtesBilling\Feature\TaskAssigned\Command as TaskAssignedCommand;
 use Razikov\AtesBilling\Feature\TaskCreated\Command as TaskCreatedCommand;
+use Razikov\AtesBilling\Feature\TaskCreatedV2\Command as TaskCreatedCommandV2;
 use Razikov\AtesBilling\Model\BaseEventCommand;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
@@ -17,6 +18,7 @@ class ExternalJsonMessageSerializer implements SerializerInterface
     private $commandMap = [
         CreateAccountCommand::class,
         TaskCreatedCommand::class,
+        TaskCreatedCommandV2::class,
         TaskCompletedCommand::class,
         TaskAssignedCommand::class,
     ];

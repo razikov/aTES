@@ -17,10 +17,16 @@ class Task
     private int $penalty;
     #[ORM\Column]
     private int $reward;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $title;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $jiraId;
 
-    public function __construct(string $id, string $description)
+    public function __construct(string $id, string $description, ?string $title = null, ?string $jiraId = null)
     {
         $this->id = $id;
+        $this->title = $title;
+        $this->jiraId = $jiraId;
         $this->description = $description;
         $this->penalty = rand(10, 20) * -1;
         $this->reward = rand(20, 40);
@@ -44,5 +50,15 @@ class Task
     public function getId()
     {
         return $this->id;
+    }
+
+    public function getTitle(): string
+    {
+        return $this->title ?? '';
+    }
+
+    public function getJiraId(): string
+    {
+        return $this->jiraId ?? '';
     }
 }

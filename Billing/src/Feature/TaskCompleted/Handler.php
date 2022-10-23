@@ -55,6 +55,7 @@ class Handler
             AccountOperationType::createDeposit(),
             $amount,
             "Task #[{$command->getTaskId()}] completed",
+            "Task #[{$command->getTaskId()}, {$task->getTitle()}, {$task->getJiraId()}] completed",
             $day
         );
 

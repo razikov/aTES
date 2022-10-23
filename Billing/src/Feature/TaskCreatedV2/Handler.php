@@ -1,9 +1,9 @@
 <?php
 
-namespace Razikov\AtesBilling\Feature\TaskAssigned;
+namespace Razikov\AtesBilling\Feature\TaskCreatedV2;
 
-use Razikov\AtesBilling\Entity\Chronos;
 use Razikov\AtesBilling\Entity\AccountOperationLog;
+use Razikov\AtesBilling\Entity\Task;
 use Razikov\AtesBilling\Model\AccountOperationType;
 use Razikov\AtesBilling\Repository\AccountRepository;
 use Razikov\AtesBilling\Repository\ChronosRepository;
@@ -17,32 +17,31 @@ class Handler
     private AccountRepository $accountRepository;
     private StorageManager $storageManager;
     private ChronosRepository $chronosRepository;
-    private TaskRepository $taskRepository;
 
     public function __construct(
         AccountRepository $accountRepository,
         StorageManager $storageManager,
-        ChronosRepository $chronosRepository,
-        TaskRepository $taskRepository
+        ChronosRepository $chronosRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->storageManager = $storageManager;
         $this->chronosRepository = $chronosRepository;
-        $this->taskRepository = $taskRepository;
     }
 
     public function __invoke(Command $command)
     {
         $account = $this->accountRepository->getById($command->getUserId());
         if (!$account) {
-            throw new \DomainException("Account not found");
+            throw new \DomainException("Account not found for {$command->getUserId()}");
         }
 
-        $task = $this->taskRepository->getById($command->getTaskId());
-        if (!$task) {
-            throw new \DomainException("Task not found");
-        }
-
+        $task = new Task(
+            $command->getTaskId(),
+            $command->getTaskDescription(),
+            $command->getTitle(),
+            $command->getJiraId()
+        );
+        
         $chronos = $this->chronosRepository->getOrCreateOnlyOneAllowed();
         $day = $chronos->getDay();
 
@@ -54,10 +53,11 @@ class Handler
             $task->getId(),
             AccountOperationType::createCharge(),
             $amount,
-            "Task #[{$command->getTaskId()}, {$task->getTitle()}, {$task->getJiraId()}] assigned",
+            "Task #[{$command->getTaskId()}, {$command->getTitle()}, {$command->getJiraId()}] assigned",
             $day
         );
 
+        $this->storageManager->persist($task);
         $this->storageManager->persist($account);
         $this->storageManager->persist($log);
         $this->storageManager->flush();
